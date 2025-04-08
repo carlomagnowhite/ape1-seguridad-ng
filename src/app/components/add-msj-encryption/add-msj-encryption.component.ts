@@ -4,6 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { UserInfo } from '../../interfaces/usuario.interface';
 import { SupabaseService } from '../../services/supabase.service';
 import { Observable, lastValueFrom } from 'rxjs';
+import { HuffmanNode } from '../../interfaces/encrypted_string_response.interface';
 
 @Component({
   selector: 'app-add-msj-encryption',
@@ -20,6 +21,7 @@ export class AddMsjEncryptionComponent {
   userEncryptedGetted = signal<UserInfo | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+  trees = signal<{ tree_name: HuffmanNode; tree_lastname: HuffmanNode; tree_email: HuffmanNode } | null>(null);
 
   constructor(private formBuilder: FormBuilder) {
     this.ngForm = this.formBuilder.group({
@@ -30,11 +32,6 @@ export class AddMsjEncryptionComponent {
   }
 
   ngOnInit() {
-    this.createMessage({
-      name: "JAIR",
-      lastname: "MATEO",
-      email: "PAREDES"
-    });
   }
 
   closeModal() {
@@ -59,13 +56,20 @@ export class AddMsjEncryptionComponent {
     }
   }
 
+  async onSubmitEncrypt() {
+    await this.encryptData(this.mapearDatos());
+    alert('Copia estas claves en un lugar seguro')
+    alert(`Email: ${JSON.stringify(this.trees()?.tree_email)}`);
+    alert(`Nombre: ${JSON.stringify(this.trees()?.tree_name)}`);
+    alert(`Apellido: ${JSON.stringify(this.trees()?.tree_lastname)}`);
+  }
+
   private async createMessage(userInfo: UserInfo) {
     // Primero creamos el mensaje normal
     await this.supabaseService.createMessage(userInfo);
     
     // Luego creamos el mensaje cifrado
-    await this.createEncryptedMessage(userInfo);
-  }
+    await this.createEncryptedMessage(userInfo);  }
 
   private async createEncryptedMessage(user: UserInfo) {
     // Esperamos a que se complete el cifrado
@@ -87,6 +91,14 @@ export class AddMsjEncryptionComponent {
         lastname: res.usuario.lastname.texto_cifrado,
         email: res.usuario.email.texto_cifrado
       };
+
+      const trees = {
+        tree_name: res.arboles.name,
+        tree_lastname: res.arboles.lastname,
+        tree_email: res.arboles.email
+      };
+
+      this.trees.set(trees);
       
       this.userEncryptedGetted.set(encryptedUser);
       return encryptedUser;
