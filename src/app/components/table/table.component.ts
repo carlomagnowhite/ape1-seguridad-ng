@@ -23,7 +23,7 @@ export class TableComponent {
     this.userEncryptedGetted.set(messages);
     console.log(messages);
   }
-  
+ 
   openModal(){
     this.open = true;
   }
