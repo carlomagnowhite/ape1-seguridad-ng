@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { UserInfo } from '../interfaces/usuario.interface';
 import { Observable } from 'rxjs';
+import { HuffmanCryptedResponse } from '../interfaces/encrypted_string_response.interface';
 
 
 @Injectable({
@@ -14,9 +15,9 @@ export class ApiService {
 
   constructor() { }
 
-  sendRegister(user: UserInfo): Observable<any> {
+  sendRegister(user: UserInfo): Observable<HuffmanCryptedResponse> {
     try {
-      return this.httpClient.post(`${this.url}cifrar_usuario`,user);
+      return this.httpClient.post<HuffmanCryptedResponse>(`${this.url}cifrar_usuario`, user);
     } catch (error) {
       throw new Error("Error: " + error);
     }
