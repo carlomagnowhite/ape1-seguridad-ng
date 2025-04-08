@@ -16,6 +16,7 @@ export class ApiService {
   constructor() { }
 
   sendRegister(user: UserInfo): Observable<HuffmanCryptedResponse> {
+    console.log(user);
     try {
       return this.httpClient.post<HuffmanCryptedResponse>(`${this.url}cifrar_usuario`, user);
     } catch (error) {
